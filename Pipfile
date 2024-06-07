@@ -1,0 +1,21 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+environs = "*"
+flask-sqlalchemy = "*"
+psycopg2-binary = "*"
+pytesseract = "*"
+pdf2image = "*"
+python-docx = "*"
+pillow = "*"
+
+[dev-packages]
+pytest = "*"
+mypy = "*"
+
+[requires]
+python_version = "3.12"
