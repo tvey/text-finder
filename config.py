@@ -7,7 +7,6 @@ env.read_env()
 class Config:
     SECRET_KEY = env.str('SECRET_KEY', default='verysecret')
     SQLALCHEMY_DATABASE_URI = env.str('DATABASE_URL')
-    DEBUG = env.bool('DEBUG', default=False)
     UPLOAD_FOLDER = env.str('UPLOAD_FOLDER')
 
 

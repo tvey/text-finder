@@ -3,11 +3,11 @@ from flask import Flask
 from config import config
 
 
-def create_app(env):
+def create_app(env: str = 'dev'):
     app = Flask(__name__)
     app.config.from_object(config[env])
 
-    from ocr.db import db
+    from database import db
 
     db.init_app(app)
 
@@ -16,11 +16,11 @@ def create_app(env):
 
     from ocr.routes import bp
 
-    app.register_blueprint(bp, url_prefix='/ocr/')
-    
+    app.register_blueprint(bp, url_prefix='')
+
     return app
 
 
 if __name__ == '__main__':
     app = create_app('dev')
-    app.run()
+    app.run(debug=app.config.DEBUG)

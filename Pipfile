@@ -9,9 +9,9 @@ environs = "*"
 flask-sqlalchemy = "*"
 psycopg2-binary = "*"
 pytesseract = "*"
-pdf2image = "*"
 python-docx = "*"
 pillow = "*"
+pymupdf = "*"
 
 [dev-packages]
 pytest = "*"
