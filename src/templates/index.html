@@ -35,19 +35,40 @@
             {% endif %}
           {% endwith %}
 
-          {% if txt_file and docx_file %}
-          <div class="mt-4">
-              <h2>Скачать результат</h2>
-              <div class="list-group">
-                <a class="list-group-item list-group-item-action" href="{{ url_for('ocr.download_file', file=txt_file) }}">Скачать .txt</a>
-                <a class="list-group-item list-group-item-action" href="{{ url_for('ocr.download_file', file=docx_file) }}">Скачать .docx</a>
-              </div>
-          </div>
-          {% endif %}
+          <div id="status" class="mt-4"></div>
+
         </div>
       </div>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+      {% if task_id %}
+      function checkStatus() {
+        fetch('/status/{{ task_id }}')
+          .then(response => response.json())
+          .then(data => {
+            const statusDiv = document.getElementById('status');
+            if (data.state === 'PENDING') {
+              statusDiv.innerHTML = 'Обработка...';
+            } else if (data.state === 'SUCCESS') {
+              console.log(data.result)
+              statusDiv.innerHTML = `
+                <p>Обработка завершена! Можно скачать файлы:</p>
+                <div class="list-group">
+                  <a href="${data.result.txt_path}" class="list-group-item list-group-item-action">Скачать .txt</a>
+                  <a href="${data.result.docx_path}" class="list-group-item list-group-item-action">Скачать .docx</a>
+                </div>
+              `;
+              clearInterval(intervalId);
+            } else if (data.state === 'FAILURE') {
+              statusDiv.innerHTML = 'Обработка не удалась: ' + data.info;
+              clearInterval(intervalId);
+            }
+          });
+        }
+        const intervalId = setInterval(checkStatus, 500);
+        {% endif %}
+    </script>
     <script src="{{ url_for('ocr.static', filename='script.js') }}"></script>
   </body>
 </html>

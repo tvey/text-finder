@@ -12,6 +12,8 @@ class Config:
     UPLOAD_FOLDER = env.str('UPLOAD_FOLDER')
     MAX_CONTENT_LENGTH = MAX_FILE_SIZE * 1000 * 1000
     FLASK_DEBUG = env.bool('FLASK_DEBUG')
+    CELERY_BROKER_URL = env.str('CELERY_BROKER_URL')
+    CELERY_RESULT_BACKEND = env.str('CELERY_RESULT_BACKEND')
 
 
 class DevConfig(Config):
@@ -21,7 +23,6 @@ class DevConfig(Config):
 
 class ProdConfig(Config):
     FLASK_ENV = 'production'
-    DEBUG = False
 
 
 config = {

@@ -1,6 +1,8 @@
 from flask import Flask
 
-from config import config
+from celery_worker import make_celery
+
+from src.config import config
 
 
 def create_app(env: str = 'dev'):
@@ -18,9 +20,12 @@ def create_app(env: str = 'dev'):
 
     app.register_blueprint(bp, url_prefix='')
 
+    celery = make_celery()
+    app.celery = celery
+
     return app
 
 
 if __name__ == '__main__':
     app = create_app('dev')
-    app.run(debug=app.config.DEBUG)
+    app.run(host='0.0.0.0')

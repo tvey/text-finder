@@ -1,4 +1,4 @@
-import logging
+import json
 import os
 import uuid
 
@@ -13,14 +13,7 @@ from flask import (
     url_for,
 )
 
-from database import OcrResult, db
-from ocr.utils import (
-    get_text,
-    is_allowed,
-    save_result,
-    TEXTS as txt,
-    ALLOWED_EXT,
-)
+from .utils import is_allowed, TEXTS as txt
 
 bp = Blueprint(
     'ocr',
@@ -30,13 +23,26 @@ bp = Blueprint(
 )
 
 
+@bp.route('/status/<task_id>', methods=['GET'])
+def task_status(task_id):
+    task = current_app.celery.AsyncResult(task_id)
+    if task.state == 'SUCCESS':
+        result = task.result
+        print(result)
+    else:
+        result = None
+
+    response = {'state': task.state, 'result': result}
+    return json.dumps(response)
+
+
 @bp.route('/', methods=['GET', 'POST'])
 def index():
     upload_folder = current_app.config['UPLOAD_FOLDER']
 
     if request.method == 'POST':
         if 'file' not in request.files:
-            flash('No file part')
+            flash(txt.no_file, 'info')
             return redirect(request.url)
 
         file = request.files['file']
@@ -53,27 +59,17 @@ def index():
             upload_path = os.path.join(upload_folder, new_filename)
             file.save(upload_path)
 
-            if file_extension in ALLOWED_EXT:
-                text = get_text(upload_path)
-            else:
-                flash(txt.type_not_supported, 'info')
-                return redirect(request.url)
-
-            txt_path, docx_path = save_result(
-                uuid_filename, text, upload_folder
+            task = current_app.celery.send_task(
+                'celery_tasks.process_file',
+                args=[
+                    upload_path,
+                    uuid_filename,
+                    original_filename,
+                    upload_folder,
+                ],
             )
-            ocr_result = OcrResult(
-                filename=new_filename,
-                txt_path=txt_path,
-                docx_path=docx_path,
-                original_filename=original_filename,
-            )
-            db.session.add(ocr_result)
-            db.session.commit()
-
-            return render_template(
-                'index.html', txt_file=txt_path, docx_file=docx_path
-            )
+            flash(txt.processing_file, 'info')
+            return render_template('index.html', task_id=task.id)
 
         flash(txt.type_not_supported, 'info')
         return redirect(request.url)

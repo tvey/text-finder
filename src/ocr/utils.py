@@ -6,12 +6,13 @@ import pytesseract
 from docx import Document
 from PIL import Image
 
-from config import MAX_FILE_SIZE
+from src.config import MAX_FILE_SIZE
 
 TEXTS = SimpleNamespace(
     type_not_supported='Такой тип файла не поддерживается',
     no_file='Нужно выбрать файл',
-    file_too_large=f'Файл может быть не больше {MAX_FILE_SIZE} МБ'
+    file_too_large=f'Файл может быть не больше {MAX_FILE_SIZE} МБ',
+    processing_file='Файл обрабатывается, скоро придёт уведомление о завершении'
 )
 ALLOWED_EXT = ['pdf', 'png', 'jpg', 'jpeg']
 IMAGE_EXT = ['png', 'jpg', 'jpeg']

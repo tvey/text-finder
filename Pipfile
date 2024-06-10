@@ -12,6 +12,8 @@ pytesseract = "*"
 python-docx = "*"
 pillow = "*"
 pymupdf = "*"
+celery = "*"
+redis = "*"
 
 [dev-packages]
 pytest = "*"
