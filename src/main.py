@@ -1,27 +1,23 @@
 from flask import Flask
-
-from celery_worker import make_celery
-
 from src.config import config
+from src.database import db
+from src.celery_worker import make_celery
 
 
 def create_app(env: str = 'dev'):
     app = Flask(__name__)
     app.config.from_object(config[env])
 
-    from database import db
-
     db.init_app(app)
 
     with app.app_context():
         db.create_all()
 
-    from ocr.routes import bp
+    from src.ocr.routes import bp
 
     app.register_blueprint(bp, url_prefix='')
 
-    celery = make_celery()
-    app.celery = celery
+    make_celery(app)
 
     return app
 
