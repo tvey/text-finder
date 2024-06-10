@@ -1,5 +1,4 @@
 import os
-import re
 from types import SimpleNamespace
 
 import pymupdf
@@ -7,9 +6,12 @@ import pytesseract
 from docx import Document
 from PIL import Image
 
+from config import MAX_FILE_SIZE
+
 TEXTS = SimpleNamespace(
     type_not_supported='Такой тип файла не поддерживается',
     no_file='Нужно выбрать файл',
+    file_too_large=f'Файл может быть не больше {MAX_FILE_SIZE} МБ'
 )
 ALLOWED_EXT = ['pdf', 'png', 'jpg', 'jpeg']
 IMAGE_EXT = ['png', 'jpg', 'jpeg']
@@ -23,8 +25,8 @@ def ocr_image(image_path: str) -> str:
     image = Image.open(image_path)
     text = pytesseract.image_to_string(
         image,
-        lang='rus',
-        config='--psm 10 --oem 3',
+        lang='eng+rus',
+        config='--psm 6 --oem 3',
     )
     return text
 

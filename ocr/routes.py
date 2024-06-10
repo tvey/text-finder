@@ -1,3 +1,4 @@
+import logging
 import os
 import uuid
 
@@ -88,3 +89,10 @@ def download_file():
         return redirect(url_for('ocr.index'))
 
     return send_file(file_path, as_attachment=True)
+
+
+@bp.errorhandler(413)
+def handle_large_file(error):
+    current_app.logger.info(f'Large file error: {error}')
+    flash(txt.file_too_large, 'info')
+    return redirect(request.url)
