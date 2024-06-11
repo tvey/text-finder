@@ -55,8 +55,8 @@
               statusDiv.innerHTML = `
                 <p>Обработка завершена! Можно скачать файлы:</p>
                 <div class="list-group">
-                  <a href="${data.result.txt_path}" class="list-group-item list-group-item-action">Скачать .txt</a>
-                  <a href="${data.result.docx_path}" class="list-group-item list-group-item-action">Скачать .docx</a>
+                  <a href="${data.result.txt_path}" class="list-group-item list-group-item-action" download>Скачать .txt</a>
+                  <a href="${data.result.docx_path}" class="list-group-item list-group-item-action" download>Скачать .docx</a>
                 </div>
               `;
               clearInterval(intervalId);

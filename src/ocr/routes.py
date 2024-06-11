@@ -10,6 +10,7 @@ from flask import (
     render_template,
     request,
     send_file,
+    send_from_directory,
     url_for,
 )
 
@@ -39,6 +40,8 @@ def task_status(task_id):
 @bp.route('/', methods=['GET', 'POST'])
 def index():
     upload_folder = current_app.config['UPLOAD_FOLDER']
+    print('Upload folder from index:', upload_folder)
+    os.makedirs(upload_folder, exist_ok=True)
 
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -85,6 +88,11 @@ def download_file():
         return redirect(url_for('ocr.index'))
 
     return send_file(file_path, as_attachment=True)
+
+
+@bp.route('/uploads/<filename>')
+def uploads(filename):
+    return send_from_directory(current_app.config['UPLOAD_FOLDER'], filename)
 
 
 @bp.errorhandler(413)

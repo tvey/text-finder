@@ -2,8 +2,9 @@ import datetime
 from typing import Annotated
 
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import text
+from sqlalchemy import DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.sql import func
 
 
 class Base(DeclarativeBase):
@@ -11,8 +12,6 @@ class Base(DeclarativeBase):
 
 
 db = SQLAlchemy(model_class=Base)
-
-# User
 
 
 class OcrResult(db.Model):
@@ -22,14 +21,15 @@ class OcrResult(db.Model):
     txt_path: Mapped[str]
     docx_path: Mapped[str]
     original_filename: Mapped[str | None]
-    created_at = Annotated[
-        datetime.datetime,
-        mapped_column(server_default=text("TIMEZONE('utc', now())")),
-    ]
+    created_date: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     def __repr__(self):
         return f'OcrResult({self.filename})'
 
 
 def save_ocr_result(data: dict):  # meh
-    pass
+    ocr_result = OcrResult(**data)
+    db.session.add(ocr_result)
+    db.session.commit()
